@@ -1,0 +1,256 @@
+:root {
+  --fondo: #121417;
+  --panel: #1b1e22;
+  --borde: #2a2e34;
+  --texto: #c9cdd3;
+  --texto-tenue: #7a8089;
+  --acento: #4c9aff;
+  --verde: #3fb950;
+  --amarillo: #d29922;
+  --rojo: #f85149;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+}
+
+.valor-mono,
+input,
+table td,
+.indicador-pata {
+  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 2px;
+  padding: 8px 10px;
+}
+
+.titulo-panel {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-tenue);
+  border-bottom: 1px solid var(--borde);
+  padding-bottom: 6px;
+}
+
+.titulo-subpanel {
+  margin: 10px 0 6px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-tenue);
+}
+
+#panel-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  border-radius: 0;
+  margin-bottom: 8px;
+}
+
+.controles-grupo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.etiqueta {
+  color: var(--texto-tenue);
+  font-size: 12px;
+}
+
+input[type="text"] {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 2px;
+  color: var(--texto);
+  padding: 4px 6px;
+  font-size: 12px;
+  width: 190px;
+}
+
+input[type="text"]:focus {
+  outline: 1px solid var(--acento);
+}
+
+.boton {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 2px;
+  color: var(--texto);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: "IBM Plex Sans", sans-serif;
+  cursor: pointer;
+}
+
+.boton:hover:not(:disabled) {
+  border-color: var(--acento);
+}
+
+.boton:disabled {
+  color: var(--texto-tenue);
+  cursor: default;
+}
+
+.estado {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--borde);
+}
+
+.estado-conectado {
+  color: var(--verde);
+  border-color: var(--verde);
+}
+
+.estado-desconectado {
+  color: var(--rojo);
+  border-color: var(--rojo);
+}
+
+.estado-reconectando {
+  color: var(--amarillo);
+  border-color: var(--amarillo);
+}
+
+#grid-paneles {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 8px;
+  padding: 0 8px 8px 8px;
+}
+
+.panel-motores {
+  grid-row: 1 / 3;
+}
+
+.tabla-scroll {
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 3px 8px;
+  text-align: right;
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+
+th {
+  color: var(--texto-tenue);
+  font-weight: 500;
+  font-size: 11px;
+  text-align: right;
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+}
+
+th:first-child, td:first-child {
+  text-align: left;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.celda-temperatura.verde { color: var(--verde); }
+.celda-temperatura.amarillo { color: var(--amarillo); }
+.celda-temperatura.rojo { color: var(--rojo); }
+
+.imu-valores, .bms-valores {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.imu-item, .bms-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.valor-grande {
+  font-size: 18px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.chart-contenedor {
+  height: 160px;
+}
+
+.patas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  max-width: 180px;
+}
+
+.pata-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--borde);
+}
+
+.indicador-pata {
+  width: 100%;
+  text-align: center;
+  padding: 2px 0;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 2px;
+  border: 1px solid var(--borde);
+  color: var(--texto-tenue);
+}
+
+.indicador-pata.contacto {
+  color: var(--verde);
+  border-color: var(--verde);
+}
+
+.indicador-pata.sin-contacto {
+  color: var(--texto-tenue);
+}
+
+.aviso {
+  color: var(--texto-tenue);
+  font-size: 12px;
+}
+
+.oculto {
+  display: none;
+}
+
+#tabla-celdas {
+  margin-top: 8px;
+}

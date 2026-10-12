@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Telemetría — Unitree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<header id="panel-controles" class="panel">
+  <div class="controles-grupo">
+    <span class="etiqueta">Conexión</span>
+    <input id="input-host" type="text" value="http://localhost:8001" spellcheck="false">
+    <button id="btn-conectar" class="boton">Conectar</button>
+    <span id="estado-conexion" class="estado estado-desconectado">Desconectado</span>
+  </div>
+
+  <div class="controles-grupo">
+    <span class="etiqueta">Modelo (Go2 / G1)</span>
+    <span id="valor-modelo" class="valor-mono">—</span>
+  </div>
+
+  <div class="controles-grupo">
+    <button id="btn-capturar" class="boton" disabled>Capturar muestra</button>
+    <button id="btn-exportar" class="boton" disabled>Exportar CSV</button>
+    <span class="etiqueta">Muestras capturadas</span>
+    <span id="valor-muestras" class="valor-mono">0</span>
+  </div>
+</header>
+
+<main id="grid-paneles">
+
+  <section id="panel-motores" class="panel panel-motores">
+    <h2 class="titulo-panel">Motores</h2>
+    <div class="tabla-scroll">
+      <table id="tabla-motores">
+        <thead>
+          <tr>
+            <th>Motor</th>
+            <th>Temperatura (°C)</th>
+            <th>Ángulo (°)</th>
+            <th>Velocidad angular (rad/s)</th>
+            <th>Torque estimado (N·m)</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpo-tabla-motores"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="panel-imu" class="panel">
+    <h2 class="titulo-panel">IMU</h2>
+    <div class="imu-valores">
+      <div class="imu-item">
+        <span class="etiqueta">Roll (°)</span>
+        <span id="valor-roll" class="valor-mono valor-grande">0.00</span>
+      </div>
+      <div class="imu-item">
+        <span class="etiqueta">Pitch (°)</span>
+        <span id="valor-pitch" class="valor-mono valor-grande">0.00</span>
+      </div>
+      <div class="imu-item">
+        <span class="etiqueta">Yaw (°)</span>
+        <span id="valor-yaw" class="valor-mono valor-grande">0.00</span>
+      </div>
+    </div>
+    <h3 class="titulo-subpanel">Histórico</h3>
+    <div class="chart-contenedor">
+      <canvas id="chart-imu"></canvas>
+    </div>
+  </section>
+
+  <section id="panel-bms" class="panel">
+    <h2 class="titulo-panel">BMS</h2>
+    <div class="bms-valores">
+      <div class="bms-item">
+        <span class="etiqueta">Carga (%)</span>
+        <span id="valor-soc" class="valor-mono valor-grande">0</span>
+      </div>
+      <div class="bms-item">
+        <span class="etiqueta">Corriente (mA)</span>
+        <span id="valor-corriente" class="valor-mono valor-grande">0</span>
+      </div>
+      <div class="bms-item">
+        <span class="etiqueta">Temperatura (°C)</span>
+        <span id="valor-temp-bms" class="valor-mono valor-grande">0.0</span>
+      </div>
+    </div>
+    <table id="tabla-celdas">
+      <thead>
+        <tr>
+          <th>Celda</th>
+          <th>Tensión de celda (V)</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla-celdas"></tbody>
+    </table>
+  </section>
+
+  <section id="panel-patas" class="panel">
+    <h2 class="titulo-panel">Patas</h2>
+    <div id="contenido-patas" class="patas-grid">
+      <div class="pata-item" data-pata="FL">
+        <span class="etiqueta">FL</span>
+        <span class="indicador-pata" id="indicador-FL"></span>
+      </div>
+      <div class="pata-item" data-pata="FR">
+        <span class="etiqueta">FR</span>
+        <span class="indicador-pata" id="indicador-FR"></span>
+      </div>
+      <div class="pata-item" data-pata="RL">
+        <span class="etiqueta">RL</span>
+        <span class="indicador-pata" id="indicador-RL"></span>
+      </div>
+      <div class="pata-item" data-pata="RR">
+        <span class="etiqueta">RR</span>
+        <span class="indicador-pata" id="indicador-RR"></span>
+      </div>
+    </div>
+    <p id="patas-no-disponible" class="aviso oculto">No disponible para este modelo</p>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

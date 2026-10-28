@@ -16,10 +16,15 @@ export function setConexion(valor) {
 }
 
 export function setInfo(info) {
-  if (estado.info && estado.info.modelo !== info.modelo) {
-    estado.historicoMotores = [];
-  }
   estado.info = info;
+}
+
+// Vacia todo lo acumulado: se usa al conectar o cuando cambia el robot.
+export function reiniciarEstado() {
+  estado.snapshot = null;
+  estado.historicoImu = [];
+  estado.historicoMotores = [];
+  estado.muestrasCapturadas = [];
 }
 
 export function setSnapshot(snapshot) {

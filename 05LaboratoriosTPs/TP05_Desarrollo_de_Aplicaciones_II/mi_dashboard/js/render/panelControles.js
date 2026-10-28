@@ -14,8 +14,14 @@ const CLASES_ESTADO = {
   Reconectando: "estado-reconectando",
 };
 
-export function inicializarPanelControles({ onConectar, onCapturar, onExportar }) {
-  btnConectar.addEventListener("click", () => onConectar(inputHost.value.trim()));
+let conectado = false;
+
+// Un solo boton que alterna entre Conectar y Desconectar segun el estado.
+export function inicializarPanelControles({ onConectar, onDesconectar, onCapturar, onExportar }) {
+  btnConectar.addEventListener("click", () => {
+    if (conectado) onDesconectar();
+    else onConectar(inputHost.value.trim());
+  });
   btnCapturar.addEventListener("click", onCapturar);
   btnExportar.addEventListener("click", onExportar);
 }
@@ -25,6 +31,9 @@ export function renderEstadoConexion(estado) {
   estadoConexion.className = `estado ${CLASES_ESTADO[estado]}`;
   const activo = estado !== "Desconectado";
   btnCapturar.disabled = !activo;
+  conectado = activo;
+  btnConectar.textContent = activo ? "Desconectar" : "Conectar";
+  inputHost.disabled = activo;
 }
 
 export function renderModelo(info) {

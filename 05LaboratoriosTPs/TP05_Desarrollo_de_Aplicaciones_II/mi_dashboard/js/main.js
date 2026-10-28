@@ -1,5 +1,5 @@
-import { estado, setConexion, setInfo, setSnapshot, capturarMuestra } from "./estado.js";
-import { conectar } from "./clienteDatos.js";
+import { estado, setConexion, setInfo, setSnapshot, capturarMuestra, reiniciarEstado } from "./estado.js";
+import { conectar, desconectar } from "./clienteDatos.js";
 import { exportarCsv } from "./exportarCsv.js";
 import {
   inicializarPanelControles,
@@ -33,6 +33,13 @@ function onInfoRecibida(info) {
   configurarPanelGraficoMotores(info);
 }
 
+// Al reconectar aparecio otro robot: se descarta lo acumulado y se arranca de nuevo.
+function onRobotCambiado(info) {
+  reiniciarEstado();
+  renderContadorMuestras(0);
+  onInfoRecibida(info);
+}
+
 function onDatosRecibidos(snapshot) {
   setSnapshot(snapshot);
   renderPanelMotores(snapshot);
@@ -44,15 +51,22 @@ function onDatosRecibidos(snapshot) {
 
 async function onConectarClick(host) {
   if (!host) return;
+  reiniciarEstado();
+  renderContadorMuestras(0);
   try {
     await conectar(host, {
       onConexion: onConexionCambiada,
       onInfo: onInfoRecibida,
+      onRobotCambiado,
       onDatos: onDatosRecibidos,
     });
   } catch {
     onConexionCambiada("Desconectado");
   }
+}
+
+function onDesconectarClick() {
+  desconectar();
 }
 
 function onCapturarClick() {
@@ -66,6 +80,7 @@ function onExportarClick() {
 
 inicializarPanelControles({
   onConectar: onConectarClick,
+  onDesconectar: onDesconectarClick,
   onCapturar: onCapturarClick,
   onExportar: onExportarClick,
 });

@@ -9,10 +9,16 @@ import {
 } from "./render/panelControles.js";
 import { inicializarPanelMotores, renderPanelMotores } from "./render/panelMotores.js";
 import { inicializarPanelImu, renderPanelImu } from "./render/panelImu.js";
+import {
+  inicializarPanelGraficoMotores,
+  configurarPanelGraficoMotores,
+  renderPanelGraficoMotores,
+} from "./render/panelGraficoMotores.js";
 import { renderPanelBms } from "./render/panelBms.js";
 import { inicializarPanelPatas, renderPanelPatas } from "./render/panelPatas.js";
 
 inicializarPanelImu();
+inicializarPanelGraficoMotores();
 
 function onConexionCambiada(valor) {
   setConexion(valor);
@@ -24,12 +30,14 @@ function onInfoRecibida(info) {
   renderModelo(info);
   inicializarPanelMotores(info);
   inicializarPanelPatas(info);
+  configurarPanelGraficoMotores(info);
 }
 
 function onDatosRecibidos(snapshot) {
   setSnapshot(snapshot);
   renderPanelMotores(snapshot);
   renderPanelImu(snapshot, estado.historicoImu);
+  renderPanelGraficoMotores(estado.historicoMotores);
   renderPanelBms(snapshot);
   renderPanelPatas(snapshot);
 }

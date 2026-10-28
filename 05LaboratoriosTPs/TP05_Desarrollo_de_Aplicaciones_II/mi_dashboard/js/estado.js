@@ -7,6 +7,7 @@ export const estado = {
   info: null,               // respuesta de /info: modelo, n_motores, motores_nombres, patas
   snapshot: null,           // ultimo payload de /telemetria o /ws
   historicoImu: [],         // buffer circular: { ts, roll, pitch, yaw }
+  historicoMotores: [],     // buffer circular de angulo y temperatura por motor
   muestrasCapturadas: [],   // snapshots clonados al presionar "Capturar muestra"
 };
 
@@ -15,6 +16,9 @@ export function setConexion(valor) {
 }
 
 export function setInfo(info) {
+  if (estado.info && estado.info.modelo !== info.modelo) {
+    estado.historicoMotores = [];
+  }
   estado.info = info;
 }
 
@@ -28,6 +32,13 @@ export function setSnapshot(snapshot) {
   });
   if (estado.historicoImu.length > HISTORICO_IMU_MAX) {
     estado.historicoImu.shift();
+  }
+  estado.historicoMotores.push({
+    ts: snapshot.ts,
+    motores: snapshot.motores.map(({ id, angulo, temperatura }) => ({ id, angulo, temperatura })),
+  });
+  if (estado.historicoMotores.length > HISTORICO_IMU_MAX) {
+    estado.historicoMotores.shift();
   }
 }
 

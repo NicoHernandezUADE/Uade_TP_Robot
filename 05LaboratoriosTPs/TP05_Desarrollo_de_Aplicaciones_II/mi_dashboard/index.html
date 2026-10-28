@@ -34,6 +34,7 @@
 
 <main id="grid-paneles">
 
+  <div id="columna-motores">
   <section id="panel-motores" class="panel panel-motores">
     <h2 class="titulo-panel">Motores</h2>
     <div class="tabla-scroll">
@@ -52,6 +53,31 @@
     </div>
   </section>
 
+  <section id="panel-patas" class="panel">
+    <h2 class="titulo-panel">Patas</h2>
+    <div id="contenido-patas" class="patas-grid">
+      <div class="pata-item" data-pata="FL">
+        <span class="etiqueta">FL</span>
+        <span class="indicador-pata" id="indicador-FL"></span>
+      </div>
+      <div class="pata-item" data-pata="FR">
+        <span class="etiqueta">FR</span>
+        <span class="indicador-pata" id="indicador-FR"></span>
+      </div>
+      <div class="pata-item" data-pata="RL">
+        <span class="etiqueta">RL</span>
+        <span class="indicador-pata" id="indicador-RL"></span>
+      </div>
+      <div class="pata-item" data-pata="RR">
+        <span class="etiqueta">RR</span>
+        <span class="indicador-pata" id="indicador-RR"></span>
+      </div>
+    </div>
+    <p id="patas-no-disponible" class="aviso oculto">No disponible para este modelo</p>
+  </section>
+  </div>
+
+  <div id="columna-telemetria">
   <section id="panel-imu" class="panel">
     <h2 class="titulo-panel">IMU</h2>
     <div class="imu-valores">
@@ -101,28 +127,22 @@
     </table>
   </section>
 
-  <section id="panel-patas" class="panel">
-    <h2 class="titulo-panel">Patas</h2>
-    <div id="contenido-patas" class="patas-grid">
-      <div class="pata-item" data-pata="FL">
-        <span class="etiqueta">FL</span>
-        <span class="indicador-pata" id="indicador-FL"></span>
-      </div>
-      <div class="pata-item" data-pata="FR">
-        <span class="etiqueta">FR</span>
-        <span class="indicador-pata" id="indicador-FR"></span>
-      </div>
-      <div class="pata-item" data-pata="RL">
-        <span class="etiqueta">RL</span>
-        <span class="indicador-pata" id="indicador-RL"></span>
-      </div>
-      <div class="pata-item" data-pata="RR">
-        <span class="etiqueta">RR</span>
-        <span class="indicador-pata" id="indicador-RR"></span>
-      </div>
+  <section id="panel-grafico-motores" class="panel">
+    <h2 class="titulo-panel">Histórico de motor</h2>
+    <div class="controles-grafico-motores">
+      <label class="etiqueta" for="selector-motor">Motor</label>
+      <select id="selector-motor" disabled></select>
+      <label class="etiqueta" for="selector-metrica-motor">Dato</label>
+      <select id="selector-metrica-motor">
+        <option value="angulo">Ángulo (°)</option>
+        <option value="temperatura">Temperatura (°C)</option>
+      </select>
     </div>
-    <p id="patas-no-disponible" class="aviso oculto">No disponible para este modelo</p>
+    <div class="chart-motores-contenedor">
+      <canvas id="chart-motores"></canvas>
+    </div>
   </section>
+  </div>
 
 </main>
 

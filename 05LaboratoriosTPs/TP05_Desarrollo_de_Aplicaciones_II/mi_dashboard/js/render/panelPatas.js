@@ -5,9 +5,12 @@ const PATAS = ["FR", "FL", "RR", "RL"];
 
 const contenido = document.getElementById("contenido-patas");
 const aviso = document.getElementById("patas-no-disponible");
+const grid = document.getElementById("grid-paneles");
 
 export function inicializarPanelPatas(info) {
   const disponible = info.modelo === "go2";
+  grid.classList.toggle("modelo-go2", disponible);
+  grid.classList.toggle("modelo-g1", !disponible);
   contenido.classList.toggle("oculto", !disponible);
   aviso.classList.toggle("oculto", disponible);
 }

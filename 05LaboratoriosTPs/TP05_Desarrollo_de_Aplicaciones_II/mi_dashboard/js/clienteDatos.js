@@ -6,6 +6,7 @@
 
 const INTERVALO_POLLING_MS = 500;
 const REINTENTO_WS_MS = 1500;
+const TIMEOUT_DATOS_MS = 2500;
 
 let ws = null;
 let intervaloPolling = null;
@@ -16,9 +17,28 @@ let detenido = true;
 let modeloActual = null;
 let esReconexion = false;
 let verificacion = null; // promesa de verificarRobot en curso, para no duplicarla
+let ultimoTs = null;
+let timeoutDatos = null;
 
 function normalizarBase(url) {
   return url.replace(/\/+$/, "");
+}
+
+function detenerVigilanciaDatos() {
+  if (timeoutDatos) {
+    clearTimeout(timeoutDatos);
+    timeoutDatos = null;
+  }
+}
+
+function vigilarDatos() {
+  detenerVigilanciaDatos();
+  timeoutDatos = setTimeout(() => {
+    if (detenido) return;
+    handlersActuales.onConexion("Reconectando");
+    iniciarPolling();
+    if (ws?.readyState === WebSocket.OPEN) ws.close();
+  }, TIMEOUT_DATOS_MS);
 }
 
 async function consultarInfo() {
@@ -41,14 +61,20 @@ function verificarRobot() {
   return verificacion;
 }
 
-function recibirDatos(datos) {
+function recibirDatos(datos, origen) {
   // mientras se verifica el robot, o si el dato es de otro robot, no se renderiza
   if (verificacion) return;
   if (datos.modelo !== modeloActual) {
     verificarRobot().catch(() => {});
     return;
   }
+  const ts = Number(datos.ts);
+  if (!Number.isFinite(ts) || ts === ultimoTs) return;
+  ultimoTs = ts;
   handlersActuales.onDatos(datos);
+  handlersActuales.onConexion("Conectado");
+  vigilarDatos();
+  if (origen === "ws") detenerPolling();
 }
 
 function iniciarPolling() {
@@ -58,7 +84,7 @@ function iniciarPolling() {
       const resp = await fetch(`${baseUrlActual}/telemetria`, { cache: "no-store" });
       if (!resp.ok) throw new Error("respuesta no ok");
       const datos = await resp.json();
-      recibirDatos(datos);
+      recibirDatos(datos, "polling");
     } catch {
       // se reintenta en el proximo tick; el estado de conexion ya refleja el problema
     }
@@ -89,16 +115,16 @@ function abrirWebSocket() {
       if (detenido || socket.readyState !== WebSocket.OPEN) return;
     }
     esReconexion = false;
-    detenerPolling();
-    handlersActuales.onConexion("Conectado");
+    vigilarDatos();
   };
 
   socket.onmessage = (evento) => {
-    recibirDatos(JSON.parse(evento.data));
+    recibirDatos(JSON.parse(evento.data), "ws");
   };
 
   socket.onclose = () => {
     if (detenido) return;
+    detenerVigilanciaDatos();
     esReconexion = true;
     handlersActuales.onConexion("Reconectando");
     iniciarPolling();
@@ -114,8 +140,10 @@ export async function conectar(baseUrl, handlers) {
   desconectar(); // evita dejar un socket o polling viejo vivo si se reconecta a mano
   detenido = false;
   esReconexion = false;
+  ultimoTs = null;
   baseUrlActual = normalizarBase(baseUrl);
   handlersActuales = handlers;
+  handlersActuales.onConexion("Reconectando");
 
   const info = await consultarInfo();
   modeloActual = info.modelo;
@@ -127,6 +155,8 @@ export async function conectar(baseUrl, handlers) {
 export function desconectar() {
   detenido = true;
   modeloActual = null;
+  ultimoTs = null;
+  detenerVigilanciaDatos();
   detenerPolling();
   if (reintentoTimeout) {
     clearTimeout(reintentoTimeout);

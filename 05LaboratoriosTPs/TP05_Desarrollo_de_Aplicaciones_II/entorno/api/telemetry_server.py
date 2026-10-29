@@ -59,7 +59,10 @@ def _telemetria(modelo: str | None = None) -> dict:
         )
     snapshot = reader.obtener_snapshot()
     if snapshot is None:
-        raise HTTPException(status_code=503, detail="Aun no se recibio telemetria del robot")
+        raise HTTPException(
+            status_code=503,
+            detail="No hay telemetria reciente del robot o simulador",
+        )
     return adaptar_telemetria(snapshot, modelo_activo)
 
 
@@ -119,8 +122,10 @@ async def websocket_endpoint(ws: WebSocket):
     try:
         while True:
             snapshot = reader.obtener_snapshot()
-            if snapshot is not None:
-                await ws.send_json(adaptar_telemetria(snapshot, modelo_activo))
+            if snapshot is None:
+                await ws.close(code=1013, reason="Telemetria no reciente")
+                break
+            await ws.send_json(adaptar_telemetria(snapshot, modelo_activo))
             try:
                 evento = await asyncio.wait_for(ws.receive(), timeout=periodo)
                 if evento["type"] == "websocket.disconnect":

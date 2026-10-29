@@ -27,6 +27,7 @@ from config import ROBOTS
 # Tiene que coincidir con `entorno/sim/local.py`.
 HOST = "127.0.0.1"
 PUERTO = 8765
+MAX_ANTIGUEDAD_S = 2.0
 
 
 def _puerto_del_simulador() -> int:
@@ -118,7 +119,12 @@ class TelemetryReader:
         import copy
 
         with self._lock:
-            return copy.deepcopy(self._snapshot)
+            if self._snapshot is None:
+                return None
+            snapshot = copy.deepcopy(self._snapshot)
+        if time.time() - snapshot.get("timestamp", 0.0) > MAX_ANTIGUEDAD_S:
+            return None
+        return snapshot
 
     def esperar_primer_dato(self, timeout: float = 5.0) -> bool:
         limite = time.monotonic() + timeout

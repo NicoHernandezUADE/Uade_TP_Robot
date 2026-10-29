@@ -44,6 +44,11 @@ set "PYTHON="
 set "PYARGS="
 set "HAY_STORE="
 
+REM 0. Preferir el entorno virtual del TP si tiene todo instalado.
+if exist "%~dp0entorno\venv\Scripts\python.exe" set "PYTHON=%~dp0entorno\venv\Scripts\python.exe"
+if defined PYTHON "%PYTHON%" -c "import mujoco, fastapi, uvicorn" >nul 2>&1 && goto :python_encontrado
+if defined PYTHON set "PYTHON="
+
 REM 1. El lanzador. Se prefiere uno que ademas tenga MuJoCo.
 py -3 -c "import mujoco" >nul 2>&1 && set "PYTHON=py"
 if not defined PYTHON py -3 -c "import sys" >nul 2>&1 && set "PYTHON=py"
@@ -103,7 +108,27 @@ REM `start /d` en vez de `cmd /c "cd ... ^&^& ..."`: las comillas anidadas
 REM del segundo rompen cuando la ruta de Python tiene espacios, que es el
 REM caso de C:\Program Files\Python312\python.exe.
 start "Simulador" /d entorno "%PYTHON%" %PYARGS% -m sim --robot %ROBOT% --materia tp05
-timeout /t 8 >nul
+
+REM Esperar a que el socket local del simulador este escuchando (maximo 60 s).
+set /a INTENTOS=0
+:esperar_simulador
+"%PYTHON%" %PYARGS% -c "import socket,sys; s=socket.socket(); s.settimeout(0.5); r=s.connect_ex(('127.0.0.1',8765)); s.close(); sys.exit(r)" >nul 2>&1
+if not errorlevel 1 goto :simulador_listo
+set /a INTENTOS+=1
+if %INTENTOS% GEQ 60 goto :simulador_timeout
+timeout /t 1 /nobreak >nul
+goto :esperar_simulador
+
+:simulador_timeout
+echo.
+echo    ERROR: el simulador no abrio el socket local en 60 segundos.
+echo    Revisa la ventana del simulador y su mensaje de error.
+echo.
+pause
+exit /b 1
+
+:simulador_listo
+echo    Simulador listo. Iniciando backend...
 
 "%PYTHON%" %PYARGS% entorno\arrancar_api.py --robot %ROBOT%
 echo.
